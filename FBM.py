@@ -1,5 +1,6 @@
 import numpy as np
 import pandas as pd
+from common_libs import check_vector
 
 
 def fbm(x0, B, prox, gamma, max_iter=10000,
@@ -23,7 +24,7 @@ def fbm(x0, B, prox, gamma, max_iter=10000,
         x0        : nghiệm khởi tạo, shape (N,)
         B         : toán tử đơn trị
         prox      : toán tử giải J_(gamma*A)
-        gamma     : cỡ bước
+        gamma     : cỡ bước cố định
         max_iter  : số vòng lặp tối đa
         tol       : ngưỡng dừng
         iter_list : các vòng muốn lưu nghiệm
@@ -34,8 +35,7 @@ def fbm(x0, B, prox, gamma, max_iter=10000,
 
     x = np.asarray(x0, dtype=float).reshape(-1).copy()
 
-    if not np.isfinite(x).all():
-        raise ValueError("x0 có NaN hoặc Inf.")
+    x = check_vector(x, x.shape, "x0")
 
     if not np.isfinite(gamma) or gamma <= 0:
         raise ValueError("gamma phải là số dương hữu hạn.")
@@ -50,24 +50,19 @@ def fbm(x0, B, prox, gamma, max_iter=10000,
     for k in range(1, max_iter + 1):
 
         # Step 1: Tính B(x^(k-1))
-        step1 = np.asarray(
-            B(x), dtype=float
-        ).reshape(-1)
+        step1 = check_vector(
+            B(x), x.shape, "B(x)"
+        )
 
         # Step 2: Forward
         step2 = x - gamma * step1
 
         # Step 3: Backward
-        x_new = np.asarray(
+        x_new = check_vector(
             prox(step2, gamma),
-            dtype=float
-        ).reshape(-1)
-
-        if x_new.shape != x.shape:
-            raise ValueError("Sai kích thước nghiệm.")
-
-        if not np.isfinite(x_new).all():
-            raise ValueError("Nghiệm có NaN hoặc Inf.")
+            x.shape,
+            "Nghiệm mới"
+        )
 
         # r_k = ||x^k - x^(k-1)||_2
         residual = float(
@@ -81,14 +76,14 @@ def fbm(x0, B, prox, gamma, max_iter=10000,
         iterations = k
 
         if k in iter_list:
-            res[k] = x.copy() #mảng nghiệm qua từng vòng lặp
+            res[k] = x.copy()
 
-        # điều kiện dừng
+        # Điều kiện dừng
         if residual <= tol:
             converged = True
             break
 
-    # nghiệm cuối
+    # Nghiệm cuối
     res[iterations] = x.copy()
 
     return {
