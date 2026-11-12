@@ -15,13 +15,14 @@ Repo chứa phần cài đặt và thực nghiệm cho đồ án về bài toán
 | [VIP_portfolio_optimize.ipynb](VIP_portfolio_optimize.ipynb) | Chuẩn bị dữ liệu và trình bày mô hình tối ưu danh mục đầu tư. |
 | [Data/](Data/) | Ba bộ dữ liệu lợi suất tháng FF10, FF48 và FF100, tương ứng với 10, 48 và 100 danh mục. |
 
-## Đọc và chạy thực nghiệm
+## chạy thực nghiệm
 
-Nên bắt đầu từ `VIP_full_algorythms.ipynb`. Notebook trình bày một ví dụ hai chiều có nghiệm chính xác là `(2, 3)`, sau đó chạy lần lượt FBM, MFBSM, RFBSM và IRFBSM. Mỗi thuật toán có bảng nghiệm tại các mốc lặp; cuối notebook là đồ thị so sánh độ chênh lệch giữa hai nghiệm liên tiếp. Phần cài đặt chi tiết nằm trong file `.py` tương ứng.
+`VIP_full_algorythms.ipynb`. 
+Notebook trình bày một ví dụ có nghiệm chính xác là `(2, 3)` để kiểm tra khả năng chạy đúng của các thuật toán, sau đó chạy lần lượt FBM, MFBSM, RFBSM và IRFBSM. Mỗi thuật toán có bảng nghiệm tại các mốc lặp; cuối notebook là đồ thị so sánh độ chênh lệch giữa hai nghiệm liên tiếp. Phần cài đặt chi tiết nằm trong file `.py` tương ứng.
 
-Các tham số được đặt ở đầu ví dụ, gồm điểm khởi tạo, cỡ bước, tham số nới lỏng, tham số quán tính, số vòng lặp tối đa và ngưỡng dừng. Có thể thay đổi các giá trị này để chạy lại thực nghiệm.
+Các tham số được đặt ở đầu ví dụ, gồm điểm khởi tạo, cỡ bước, tham số nới lỏng, tham số quán tính, số vòng lặp tối đa và ngưỡng dừng.
 
-`VIP_portfolio_optimize.ipynb` hiện gồm phần đọc, làm sạch dữ liệu, tạo các cửa sổ huấn luyện/kiểm thử và trình bày mô hình bài toán. Notebook chưa có phần chạy các thuật toán trên dữ liệu danh mục và so sánh kết quả đầu tư.
+`VIP_portfolio_optimize.ipynb` 
+Notebook xử lý dữ liệu và chạy thuật toán cho bài toán tối ưu danh mục đầu tư với 3 bộ dữ liệu F10,F48,F100
 
-Cấu hình dữ liệu hiện tại dùng 60 tháng huấn luyện và 12 tháng kiểm thử cho mỗi cửa sổ, với giai đoạn kiểm thử từ tháng 07/1976 đến tháng 06/2006. Dữ liệu sau xử lý được lưu trong `windows_ff10`, `windows_ff48` và `windows_ff100`.
 
