@@ -1,7 +1,6 @@
 import numpy as np
 import pandas as pd
-from common_libs import check_vector
-
+from common_libs import check_vector, prox
 
 def fbm(x0, B, prox, gamma, max_iter=10000,
         tol=1e-8, iter_list=(1, 10, 100, 1000, 10000)):
@@ -23,18 +22,17 @@ def fbm(x0, B, prox, gamma, max_iter=10000,
     Input:
         x0        : nghiệm khởi tạo, shape (N,)
         B         : toán tử đơn trị
-        prox      : toán tử giải J_(gamma*A)
+        prox      : toán tử giải
         gamma     : cỡ bước cố định
         max_iter  : số vòng lặp tối đa
-        tol       : ngưỡng dừng
-        iter_list : các vòng muốn lưu nghiệm
+        tol       : sai số cho phép
+        iter_list : các vòng lặp cần lưu nghiệm
 
     Output:
         dict gồm nghiệm, lịch sử lặp và residual.
     """
-
+    
     x = np.asarray(x0, dtype=float).reshape(-1).copy()
-
     x = check_vector(x, x.shape, "x0")
 
     if not np.isfinite(gamma) or gamma <= 0:
@@ -49,41 +47,27 @@ def fbm(x0, B, prox, gamma, max_iter=10000,
 
     for k in range(1, max_iter + 1):
 
-        # Step 1: Tính B(x^(k-1))
-        step1 = check_vector(
-            B(x), x.shape, "B(x)"
-        )
+        Bx = check_vector(B(x), x.shape, "B(x)")
 
-        # Step 2: Forward
-        step2 = x - gamma * step1
-
-        # Step 3: Backward
         x_new = check_vector(
-            prox(step2, gamma),
+            prox(x - gamma * Bx, gamma),
             x.shape,
-            "Nghiệm mới"
+            "x_new"
         )
 
-        # r_k = ||x^k - x^(k-1)||_2
-        residual = float(
-            np.linalg.norm(x_new - x, ord=2)
-        )
-
+        residual = float(np.linalg.norm(x_new - x, ord=2))
         residual_history[k] = residual
 
-        # Cập nhật và lưu x^k
         x = x_new.copy()
         iterations = k
 
         if k in iter_list:
             res[k] = x.copy()
 
-        # Điều kiện dừng
         if residual <= tol:
             converged = True
             break
 
-    # Nghiệm cuối
     res[iterations] = x.copy()
 
     return {

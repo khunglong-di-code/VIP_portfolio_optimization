@@ -1,6 +1,6 @@
 import numpy as np
 import pandas as pd
-from common_libs import check_vector
+from common_libs import check_vector, prox
 
 def rfbsm(x0, B, prox, gamma, theta, mu, max_iter=10000,
           tol=1e-8, iter_list=(1, 10, 100, 1000, 10000)):
@@ -45,9 +45,7 @@ def rfbsm(x0, B, prox, gamma, theta, mu, max_iter=10000,
         dict gồm nghiệm, lịch sử lặp, residual
         và lịch sử cỡ bước gamma.
     """
-
     x = np.asarray(x0, dtype=float).reshape(-1).copy()
-
     x = check_vector(x, x.shape, "x0")
 
     if not np.isfinite(gamma) or gamma <= 0:
@@ -69,63 +67,30 @@ def rfbsm(x0, B, prox, gamma, theta, mu, max_iter=10000,
 
     for k in range(1, max_iter + 1):
 
-        # Step 1: Tính B(x^(k-1))
-        step1 = check_vector(
-            B(x), x.shape, "B(x)"
-        )
+        Bx = check_vector(B(x), x.shape, "B(x)")
+        y = check_vector(prox(x - gamma * Bx, gamma), x.shape, "y")
 
-        # Step 2: Forward
-        step2 = x - gamma * step1
-
-        # Step 3: Backward
-        y = check_vector(
-            prox(step2, gamma),
-            x.shape,
-            "Nghiệm trung gian"
-        )
-
-        # Step 4: Tính B(y^(k-1))
-        step3 = check_vector(
-            B(y), x.shape, "B(y)"
-        )
-
-        # Step 5: Bước nới lỏng
+        By = check_vector(B(y), x.shape, "B(y)")
         x_new = check_vector(
-            (1 - theta) * x
-            + theta * y
-            + theta * gamma * (step1 - step3),
+            (1 - theta) * x + theta * y + theta * gamma * (Bx - By),
             x.shape,
-            "Nghiệm mới"
+            "x_new"
         )
 
-        # r_k = ||x^k - x^(k-1)||_2
-        residual = float(
-            np.linalg.norm(x_new - x, ord=2)
-        )
-
+        residual = float(np.linalg.norm(x_new - x, ord=2))
         residual_history[k] = residual
 
-        # Step 6: Cập nhật cỡ bước
-        numerator = float(
-            np.linalg.norm(x - y, ord=2)
-        )
-
-        denominator = float(
-            np.linalg.norm(step1 - step3, ord=2)
-        )
+        numerator = float(np.linalg.norm(x - y, ord=2))
+        denominator = float(np.linalg.norm(Bx - By, ord=2))
 
         if denominator > 0:
-            gamma_new = min(
-                gamma,
-                mu * numerator / denominator
-            )
+            gamma_new = min(gamma, mu * numerator / denominator)
         else:
             gamma_new = gamma
 
         if not np.isfinite(gamma_new) or gamma_new <= 0:
             raise ValueError("Cỡ bước gamma mới không hợp lệ.")
 
-        # Cập nhật nghiệm và cỡ bước
         x = x_new.copy()
         gamma = gamma_new
         iterations = k
@@ -135,12 +100,10 @@ def rfbsm(x0, B, prox, gamma, theta, mu, max_iter=10000,
         if k in iter_list:
             res[k] = x.copy()
 
-        # Điều kiện dừng
         if residual <= tol:
             converged = True
             break
 
-    # Nghiệm cuối
     res[iterations] = x.copy()
 
     return {
