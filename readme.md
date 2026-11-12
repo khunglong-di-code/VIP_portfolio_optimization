@@ -1,53 +1,27 @@
-# Hướng dẫn sử dụng
+﻿# Thực nghiệm các thuật toán tách tiến – lùi
 
-Thư mục chứa mã thực nghiệm về bài toán bao hàm biến phân (VIP), thuật toán Forward–Backward (FBM) và dữ liệu phục vụ bài toán tối ưu danh mục đầu tư.
+Repo chứa phần cài đặt và thực nghiệm cho đồ án về bài toán bao hàm biến phân và ứng dụng trong tối ưu danh mục đầu tư. Các thuật toán được viết bằng Python; phần mô tả ví dụ, thiết lập tham số và kết quả nằm trong các notebook.
 
-## Các file chính
+## Nội dung repo
 
-| File | Nội dung |
+| File / thư mục | Nội dung |
 |---|---|
-| `FBM.py` | Hàm `fbm()` thực hiện thuật toán Forward–Backward. |
-| `VIP_full_algorythms.ipynb` | Giải thích thuật toán và ví dụ chạy FBM, hiển thị bảng kết quả lặp. |
-| `VIP_portfolio_optimize.ipynb` | Đọc, làm sạch dữ liệu và tạo cửa sổ huấn luyện/kiểm thử cho danh mục đầu tư. Hiện mới có phần chuẩn bị dữ liệu. |
-| `FF10_...xlsx`, `FF48_...xlsx`, `FF100_...xlsx` | Dữ liệu lợi suất tháng của 10, 48 và 100 danh mục. |
+| [FBM.py](FBM.py) | Thuật toán Forward–Backward (FBM). |
+| [MFBSM_Tseng.py](MFBSM_Tseng.py) | Thuật toán Forward–Backward cải tiến của Tseng (MFBSM). |
+| [RMFBSM.py](RMFBSM.py) | Thuật toán Forward–Backward có nới lỏng (RFBSM). |
+| [IRFBSM.py](IRFBSM.py) | Thuật toán Forward–Backward có nới lỏng và quán tính (IRFBSM). |
+| [common_libs.py](common_libs.py) | Các hàm dùng chung để kiểm tra vectơ, lập bảng kết quả và vẽ đồ thị hội tụ. |
+| [VIP_full_algorythms.ipynb](VIP_full_algorythms.ipynb) | Ví dụ kiểm thử và so sánh bốn thuật toán trên cùng một bài toán. |
+| [VIP_portfolio_optimize.ipynb](VIP_portfolio_optimize.ipynb) | Chuẩn bị dữ liệu và trình bày mô hình tối ưu danh mục đầu tư. |
+| [Data/](Data/) | Ba bộ dữ liệu lợi suất tháng FF10, FF48 và FF100, tương ứng với 10, 48 và 100 danh mục. |
 
-## Cài đặt lần đầu
+## Đọc và chạy thực nghiệm
 
-Cài Python, mở terminal PowerShell trong thư mục này rồi chạy:
+Nên bắt đầu từ `VIP_full_algorythms.ipynb`. Notebook trình bày một ví dụ hai chiều có nghiệm chính xác là `(2, 3)`, sau đó chạy lần lượt FBM, MFBSM, RFBSM và IRFBSM. Mỗi thuật toán có bảng nghiệm tại các mốc lặp; cuối notebook là đồ thị so sánh độ chênh lệch giữa hai nghiệm liên tiếp. Phần cài đặt chi tiết nằm trong file `.py` tương ứng.
 
-```powershell
-python -m venv .venv
-.\.venv\Scripts\python.exe -m pip install numpy pandas matplotlib scipy openpyxl jupyterlab ipykernel
-```
+Các tham số được đặt ở đầu ví dụ, gồm điểm khởi tạo, cỡ bước, tham số nới lỏng, tham số quán tính, số vòng lặp tối đa và ngưỡng dừng. Có thể thay đổi các giá trị này để chạy lại thực nghiệm.
 
-Mỗi lần muốn mở notebook, chạy:
+`VIP_portfolio_optimize.ipynb` hiện gồm phần đọc, làm sạch dữ liệu, tạo các cửa sổ huấn luyện/kiểm thử và trình bày mô hình bài toán. Notebook chưa có phần chạy các thuật toán trên dữ liệu danh mục và so sánh kết quả đầu tư.
 
-```powershell
-.\.venv\Scripts\python.exe -m jupyterlab
-```
+Cấu hình dữ liệu hiện tại dùng 60 tháng huấn luyện và 12 tháng kiểm thử cho mỗi cửa sổ, với giai đoạn kiểm thử từ tháng 07/1976 đến tháng 06/2006. Dữ liệu sau xử lý được lưu trong `windows_ff10`, `windows_ff48` và `windows_ff100`.
 
-JupyterLab sẽ mở trên trình duyệt. File `.ipynb` là notebook, gồm các ô (cell) chứa phần giải thích hoặc mã Python.
-
-## Cách chạy
-
-1. **Thử thuật toán:** mở `VIP_full_algorythms.ipynb`, chọn **Run → Run All Cells** để chạy từ trên xuống. Có thể chạy từng cell bằng **Shift + Enter**. Kết quả là bảng nghiệm theo vòng lặp và độ chênh lệch giữa hai nghiệm liên tiếp (residual).
-2. **Chuẩn bị dữ liệu danh mục:** mở `VIP_portfolio_optimize.ipynb`. Trước khi chạy, thay ba đường dẫn `PATH_FF10`, `PATH_FF48`, `PATH_FF100` bằng tên file tương đối như sau:
-
-   ```python
-   PATH_FF10 = "FF10_AVG_Value_Weighted_Returns_Monthly.xlsx"
-   PATH_FF48 = "FF48_AVG_Value_Weighted_Returns_Monthly.xlsx"
-   PATH_FF100 = "FF100_AVG_Value_Weighted_Returns_Monthly.xlsx"
-   ```
-
-   Sau đó chạy các cell từ trên xuống. Kết quả nằm trong `windows_ff10`, `windows_ff48`, `windows_ff100`, chứa dữ liệu huấn luyện, kiểm thử và các tham số đầu vào.
-
-## Tham số thường chỉnh
-
-- **FBM:** `x0` là nghiệm khởi tạo; `B` và `prox` mô tả bài toán; `gamma` là cỡ bước cần chọn theo điều kiện thuật toán; `max_iter` là số vòng lặp tối đa; `tol` là ngưỡng dừng; `iter_list` là các vòng muốn lưu nghiệm để xem bảng.
-- **Dữ liệu:** `CLEAN=True`, `FILL="zero"` thay dữ liệu thiếu bằng 0. Mặc định dùng 60 tháng huấn luyện, 12 tháng kiểm thử, trong giai đoạn kiểm thử 07/1976–06/2006; chỉnh qua `TRAIN_MONTHS`, `TEST_MONTHS`, `FIRST_TEST`, `LAST_TEST`.
-
-## Khi gặp lỗi
-
-- **Không tìm thấy `FBM` hoặc file Excel:** mở JupyterLab từ đúng thư mục này và giữ các file ở cùng thư mục với notebook.
-- **Thiếu thư viện:** chạy lại lệnh cài đặt ở trên và chọn kernel dùng môi trường `.venv`.
-- **Sau khi sửa `FBM.py`, kết quả vẫn cũ hoặc báo `KeyError: 'residual_history'`:** chọn **Kernel → Restart Kernel and Run All Cells** để nạp lại hàm và tạo lại `result`.
