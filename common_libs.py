@@ -1,5 +1,6 @@
 import numpy as np
 import pandas as pd
+import matplotlib.pyplot as plt
 
 def prox(z, gamma):
     return np.sign(z) * np.maximum(
@@ -78,8 +79,6 @@ def show_iteration_table(result, decimals=8):
             lambda v: f"{v:.6e}"
             if pd.notna(v) else "—"
         )
-
-    display(table)
 
     return table
 
