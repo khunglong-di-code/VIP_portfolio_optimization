@@ -2,12 +2,6 @@ import numpy as np
 import pandas as pd
 import matplotlib.pyplot as plt
 
-def prox(z, gamma):
-    return np.sign(z) * np.maximum(
-        np.abs(z) - gamma * lam,
-        0
-    )
-
 def check_vector(v, shape, name="Nghiệm"):
     """
     Kiểm tra vectơ:

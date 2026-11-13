@@ -1,6 +1,6 @@
 import numpy as np
 import pandas as pd
-from common_libs import check_vector, prox
+from common_libs import check_vector
 
 def rmfbsm(x0, B, prox, gamma, theta, mu, max_iter=10000,
           tol=1e-8, iter_list=(1, 10, 100, 1000, 10000)):
